@@ -1,4 +1,5 @@
 # Big Data IoT Streaming Project
+#### prepared by Viktoria Karpeykina
 
 ## 1. Описание проекта
 
@@ -14,6 +15,9 @@
 - медиана влажности.
 
 ## 2. Архитектура
+
+<img width="1536" height="1024" alt="pic1" src="https://github.com/user-attachments/assets/a3e3a577-e035-48f0-96e8-4fa720f0947a" />
+
 
 ```text
 IoT generator
@@ -53,6 +57,7 @@ big-data-iot-project-vk/
 ├── docker-compose.yml
 ├── requirements.txt
 ├── README.md
+├── pics
 │
 ├── sql/
 │   ├── ddl.sql
@@ -138,41 +143,30 @@ Python-генератор IoT-событий.
 
 Он выполняет полный пайплайн:
 
-1. читает поток из Kafka topic `iot_events`;
-2. преобразует строковое поле `event_time` в event-time timestamp;
-3. задаёт watermark с допустимым опозданием 5 секунд;
-4. читает справочник `device_types` из PostgreSQL через JDBC;
-5. соединяет поток событий со справочником;
-6. группирует события по минутному tumbling window и типу устройства;
-7. считает среднюю температуру через `AVG`;
-8. считает медиану влажности через Java UDAF `MEDIAN_HUMIDITY`;
-9. записывает результат в Kafka topic `iot_agg_results`.
+1. Читает поток из Kafka topic `iot_events`;
+2. Преобразует строковое поле `event_time` в event-time timestamp;
+3. Задаёт watermark с допустимым опозданием в max 5 секунд;
+4. Читает справочник `device_types` из PostgreSQL через JDBC;
+5. Соединяет поток событий со справочником;
+6. Группирует события по минутному tumbling window и типу устройства;
+7. Считает среднюю температуру через `AVG`;
+8. Считает медиану влажности через Java UDAF `MEDIAN_HUMIDITY`;
+9. Записывает результат в Kafka topic `iot_agg_results`.
 
 ### `java_udaf/src/main/java/com/hse/bigdata/MedianHumidityAgg.java`
 
 Java UDAF для точного расчёта медианы влажности.
 
-Flink SQL не поддерживает `PERCENTILE_CONT` в используемой сборке, поэтому медиана реализована как пользовательская агрегатная функция:
+Flink SQL не поддерживает `PERCENTILE_CONT` в используемой сборке, поэтому медиана реализована как пользовательская функция:
 
-1. значения влажности внутри окна сохраняются в аккумулятор;
-2. список сортируется;
-3. если количество значений нечётное, берётся центральное;
-4. если количество значений чётное, берётся среднее двух центральных.
+1. Значения влажности внутри окна сохраняются в аккумулятор;
+2. Список сортируется;
+3. Если количество значений нечётное, берётся центральное значение;
+4. Если количество значений чётное, берётся среднее двух центральных.
 
 ### `java_udaf/pom.xml`
 
 Maven-конфигурация для сборки JAR-файла с Java UDAF.
-
-### Тестовые Flink jobs
-
-Файлы ниже использовались для пошаговой отладки:
-
-- `flink_job/test_kafka_read.py` — проверка чтения из Kafka;
-- `flink_job/test_pg_join.py` — проверка join Kafka + PostgreSQL;
-- `flink_job/window_aggregation_print.py` — проверка оконной агрегации с выводом в print sink;
-- `flink_job/iot_datastream_final_job.py` — экспериментальная DataStream-версия, не является основной.
-
-Основной файл для сдачи — `flink_job/iot_final_job.py`.
 
 ## 6. Формат данных
 
@@ -457,6 +451,13 @@ http://localhost:8080
 - `iot_events`;
 - `iot_agg_results`.
 
+<img width="1326" height="678" alt="pic4" src="https://github.com/user-attachments/assets/8ba8d5aa-d09a-45b2-81b3-9f0adc7c6318" />
+
+<img width="1325" height="684" alt="pic3" src="https://github.com/user-attachments/assets/598e9a2b-c5e7-4375-8583-864196e7df70" />
+
+<img width="1322" height="405" alt="pic2" src="https://github.com/user-attachments/assets/9982d95e-d763-4b40-8d32-5f21fe56eb66" />
+
+
 ### Flink UI
 
 ```text
@@ -469,6 +470,11 @@ http://localhost:8081
 - failed jobs;
 - exceptions;
 - статус TaskManager.
+
+<img width="1323" height="683" alt="pic6" src="https://github.com/user-attachments/assets/9fb80532-1013-4d0e-9c4a-70e90b3f345c" />
+
+<img width="1314" height="617" alt="pic5" src="https://github.com/user-attachments/assets/4fda2953-9b8f-4a6e-a0c3-7b59631f175f" />
+
 
 ## 9. Как посмотреть логи
 
@@ -490,22 +496,7 @@ docker logs -f iot_flink_taskmanager
 docker logs --tail 300 iot_flink_taskmanager
 ```
 
-## 10. Почему проект соответствует заданию
-
-В задании требуется:
-
-1. написать генератор сообщений от IoT-устройств раз в секунду;
-2. публиковать события в Kafka;
-3. создать DDL/DML-скрипты для справочника типов устройств в PostgreSQL;
-4. читать источник из Kafka;
-5. читать справочник из PostgreSQL;
-6. соединить Kafka-события со статичным справочником из PostgreSQL;
-7. работать во Flink в event time;
-8. считать среднюю температуру и медиану влажности по каждой минуте;
-9. сохранять результат в Kafka;
-10. использовать SQL/Table API и показать переход к DataStream/Table API.
-
-В проекте это реализовано следующим образом:
+## 10. Итоговая реализация
 
 | Требование | Где реализовано |
 |---|---|
@@ -522,7 +513,7 @@ docker logs --tail 300 iot_flink_taskmanager
 | Медиана влажности | Java UDAF `MEDIAN_HUMIDITY(e.humidity)` |
 | Kafka sink | таблица `iot_agg_results` |
 | SQL/Table API | весь финальный Flink job реализован через `StreamTableEnvironment` и SQL |
-| Переход между API | тестовые файлы показывают работу через DataStream API и Table API, основной пайплайн использует Table API |
+| Переход между API | основной пайплайн использует Table API |
 
 ## 11. С какими проблемами столкнулись
 
@@ -552,16 +543,4 @@ docker compose down -v
 - вынести загрузку connector JAR-файлов в собственный Dockerfile для Flink;
 - добавить автоматическое создание Kafka topics;
 - добавить отдельный `scripts/` каталог с командами запуска;
-- добавить unit-тест для Java UDAF;
-- добавить скриншоты Kafka UI и Flink UI в README.
-
-Пример запуска - логи
-{"window_time":"15:15","device_type":"humidity_sensor","avg_temperature":33.76,"median_humidity":66.75}
-{"window_time":"15:15","device_type":"temperature_sensor","avg_temperature":21.0,"median_humidity":60.57}
-{"window_time":"15:15","device_type":"industrial_sensor","avg_temperature":25.56,"median_humidity":78.86}
-{"window_time":"15:15","device_type":"climate_station","avg_temperature":21.485,"median_humidity":42.785}
-{"window_time":"15:15","device_type":"smart_home_sensor","avg_temperature":22.85,"median_humidity":43.04}
-{"window_time":"15:16","device_type":"industrial_sensor","avg_temperature":27.850000000000005,"median_humidity":45.94}
-{"window_time":"15:16","device_type":"smart_home_sensor","avg_temperature":29.28,"median_humidity":64.62}
-{"window_time":"15:16","device_type":"humidity_sensor","avg_temperature":24.87,"median_humidity":84.16}
-{"window_time":"15:16","device_type":"climate_station","avg_temperature":25.64,"median_humidity":45.69}
+- добавить unit-тест для Java UDAF.
