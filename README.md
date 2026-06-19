@@ -52,7 +52,7 @@ Kafka topic: iot_agg_results
 ## 4. Структура репозитория
 
 ```text
-big-data-iot-project-vk/
+BigData-IOT-Streaming/
 │
 ├── docker-compose.yml
 ├── requirements.txt
