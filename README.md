@@ -473,12 +473,15 @@ http://localhost:8081
 
 Можно проверить:
 
+<img width="1323" height="683" alt="pic5" src="pics/pic5.png" />
+
 - запущенные jobs;
 - failed jobs;
 - exceptions;
 - статус TaskManager.
 
-<img width="1323" height="683" alt="pic5" src="pics/pic5.png" />
+
+Граф выполнения потокового конвейера во Flink:
 
 <img width="1314" height="617" alt="pic6" src="pics/pic6.png" />
 
