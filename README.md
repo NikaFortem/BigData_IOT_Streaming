@@ -16,7 +16,7 @@
 
 ## 2. Архитектура
 
-<img width="1536" height="1024" alt="pic1" src="https://github.com/user-attachments/assets/a3e3a577-e035-48f0-96e8-4fa720f0947a" />
+<img width="1536" height="1024" alt="pic1" src="pics/pic1.png" />
 
 
 ```text
