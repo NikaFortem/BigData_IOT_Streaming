@@ -448,14 +448,19 @@ http://localhost:8080
 
 Можно проверить топики:
 
+<img width="1326" height="678" alt="pic2" src="pics/pic2.png" />
+
+
 - `iot_events`;
 - `iot_agg_results`.
 
-<img width="1326" height="678" alt="pic4" src="https://github.com/user-attachments/assets/8ba8d5aa-d09a-45b2-81b3-9f0adc7c6318" />
+Поток сырых IoT-событий, генерируемых producer'ом и поступающих в Kafka:
 
-<img width="1325" height="684" alt="pic3" src="https://github.com/user-attachments/assets/598e9a2b-c5e7-4375-8583-864196e7df70" />
+<img width="1325" height="684" alt="pic3" src="pics/pic3.png" />
 
-<img width="1322" height="405" alt="pic2" src="https://github.com/user-attachments/assets/9982d95e-d763-4b40-8d32-5f21fe56eb66" />
+Результат обработки во Flink: обогащение данных, оконная агрегация и вычисление средней температуры и медианы влажности:
+
+<img width="1322" height="405" alt="pic4" src="pics/pic4.png" />
 
 
 ### Flink UI
@@ -471,9 +476,9 @@ http://localhost:8081
 - exceptions;
 - статус TaskManager.
 
-<img width="1323" height="683" alt="pic6" src="https://github.com/user-attachments/assets/9fb80532-1013-4d0e-9c4a-70e90b3f345c" />
+<img width="1323" height="683" alt="pic5" src="pics/pic5.png" />
 
-<img width="1314" height="617" alt="pic5" src="https://github.com/user-attachments/assets/4fda2953-9b8f-4a6e-a0c3-7b59631f175f" />
+<img width="1314" height="617" alt="pic6" src="pics/pic6.png" />
 
 
 ## 9. Как посмотреть логи
